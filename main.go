@@ -1,3 +1,4 @@
+// Author: Jakub Sofinski
 package main
 import (
     "fmt"
@@ -28,7 +29,7 @@ func getFromUser() {
     // fmt.Println(len(parameters))
     readFileMessage(parameters[0])
     for i := 0; i < len(parameters); i++ {
-        readFile(parameters[i], i)
+        readFile(parameters[i])
     }
     getKey(len(parameters))
 
@@ -46,11 +47,11 @@ func getFromUser() {
 
 func testUTF8() {
     readFileMessage("data/utf8_1.txt")
-    readFile("data/utf8_1.txt", 0)
-    readFile("data/utf8_2.txt", 1)
-    readFile("data/utf8_3.txt", 2)
-    readFile("data/utf8_4.txt", 3)
-    readFile("data/utf8_5.txt", 4)
+    readFile("data/utf8_1.txt")
+    readFile("data/utf8_2.txt")
+    readFile("data/utf8_3.txt")
+    readFile("data/utf8_4.txt")
+    readFile("data/utf8_5.txt")
 
     getKey(5)
     
@@ -67,26 +68,26 @@ func testUTF8() {
 }
 func test() {
     readFileMessage("data/message.txt")
-    readFile("data/cryptogram1.txt", 0)
-    readFile("data/cryptogram2.txt", 1)
-    readFile("data/cryptogram3.txt", 2)
-    readFile("data/cryptogram4.txt", 3)
-    readFile("data/cryptogram5.txt", 4)
-    readFile("data/cryptogram6.txt", 5)
-    readFile("data/cryptogram7.txt", 6)
-    readFile("data/cryptogram8.txt", 7)
-    readFile("data/cryptogram9.txt", 8)
-    readFile("data/cryptogram10.txt", 9)
-    readFile("data/cryptogram11.txt", 10)
-    readFile("data/cryptogram12.txt", 11)
-    readFile("data/cryptogram13.txt", 12)
-    readFile("data/cryptogram14.txt", 13)
-    readFile("data/cryptogram15.txt", 14)
-    readFile("data/cryptogram16.txt", 15)
-    readFile("data/cryptogram17.txt", 16)
-    readFile("data/cryptogram18.txt", 17)
-    readFile("data/cryptogram19.txt", 18)
-    readFile("data/cryptogram20.txt", 19)
+    readFile("data/cryptogram1.txt")
+    readFile("data/cryptogram2.txt")
+    readFile("data/cryptogram3.txt")
+    readFile("data/cryptogram4.txt")
+    readFile("data/cryptogram5.txt")
+    readFile("data/cryptogram6.txt")
+    readFile("data/cryptogram7.txt")
+    readFile("data/cryptogram8.txt")
+    readFile("data/cryptogram9.txt")
+    readFile("data/cryptogram10.txt")
+    readFile("data/cryptogram11.txt")
+    readFile("data/cryptogram12.txt")
+    readFile("data/cryptogram13.txt")
+    readFile("data/cryptogram14.txt")
+    readFile("data/cryptogram15.txt")
+    readFile("data/cryptogram16.txt")
+    readFile("data/cryptogram17.txt")
+    readFile("data/cryptogram18.txt")
+    readFile("data/cryptogram19.txt")
+    readFile("data/cryptogram20.txt")
 
     for i := 2; i <= 20; i++ {
         fmt.Print(strconv.Itoa(i) + ": ")
@@ -101,7 +102,7 @@ func test() {
         }
         fmt.Println()
     }
-    result := xorBytes(inputArrayString[11], realKey)
+    result := xorBytes(inputArrayString[9], realKey)
     for i := 0; i < len(result); i++ {
         if result[i] == "" {
             fmt.Print("?")
@@ -175,7 +176,6 @@ func getKey(size int) {
     }
 
 }
-
 func stringByteToByte(bitString string) string {
     result, err := strconv.ParseUint(bitString, 2, 8)
     if err != nil {
@@ -183,19 +183,24 @@ func stringByteToByte(bitString string) string {
     }
     return string(result)
 }
-
 func stringToByteArray(text []byte) []byte {
     tempInputArray := []byte{}
     
     bitstring := ""
+    counter := 0
     for i := 0; i < len(string(text)); i++ {
-        if string(text[i]) != " "{
+        if string(text[i]) != " " && counter != 8 {
             bitstring += string(text[i])
+            counter++
         } else {
             newByte, err := strconv.ParseUint(bitstring, 2, 8)
             if err != nil {
                 panic(err)
             }
+            if (counter == 8) && string(text[i]) != " " {
+                i--
+            }
+            counter = 0
             tempInputArray = append(tempInputArray, byte(newByte))
             bitstring = ""
         }
@@ -212,6 +217,9 @@ func stringToStringArray(text []byte) []string {
             bitstring += string(text[i])
             counter++
         } else {
+            if (counter == 8) && string(text[i]) != " " {
+                i--
+            }
             counter = 0
             tempInputArrayString = append(tempInputArrayString, bitstring)
             bitstring = ""
@@ -219,7 +227,6 @@ func stringToStringArray(text []byte) []string {
     }
     return tempInputArrayString
 }
-
 func checkIfSpecial(text string) bool {
     if text[1] == '1' {
         return true
@@ -227,7 +234,7 @@ func checkIfSpecial(text string) bool {
         return false
     }
 }
-func readFile(fileName string, textPosition int) {
+func readFile(fileName string) {
     file, err := os.Open(fileName)
     if err != nil {
         log.Fatal(err)
@@ -245,7 +252,6 @@ func readFile(fileName string, textPosition int) {
     inputArray = append(inputArray, stringToByteArray(text))
     inputArrayString = append(inputArrayString, stringToStringArray(text))
 }
-
 func readFileMessage(fileName string) {
     file, err := os.Open(fileName)
     if err != nil {
@@ -263,7 +269,6 @@ func readFileMessage(fileName string) {
     // fmt.Println(inputArray[textPosition])
     // fmt.Println(inputArrayString[textPosition])
 }
-
 func xorByteString(first string, second string) string {
     result := ""
     for i := 0; i < len(first); i++ {
@@ -275,7 +280,6 @@ func xorByteString(first string, second string) string {
     }
     return result
 }
-
 func xorBytes(firstArray []string, secondArray[]string) []string {
     result := []string{}
 
@@ -322,7 +326,6 @@ func min(a int, b int) int {
         return a
     }
 }
-
 func mostFrequent(array []string) string {
     // fmt.Println("start")
     m := make(map[string]int)
